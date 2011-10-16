@@ -1,4 +1,4 @@
-  var a;
+	var a;
     $estr = function () {return js.Boot.__string_rec(this, "");};
     easel = {};
     easel.util = {};
@@ -120,6 +120,7 @@
     a.numFrames = null;
     a.setFrame = function (b) {return this.frame = b;};
     a.__class__ = easel.display.ImageSprite;
+// tetris definition ------
     tetris = {};
     tetris.BoardEvent = {__ename__: ["tetris", "BoardEvent"], __constructs__: ["PieceMoved", "PieceDropped", "PiecePlaced", "PieceRotated", "NextPiece", "RowsCleared", "ScoreChanged", "LevelChanged", "GameOver"]};
     tetris.BoardEvent.GameOver = ["GameOver", 8];
@@ -145,7 +146,15 @@
     a.dispatch = function (b) {for (var c = 0, d = this._handlers; c < d.length;) {var e = d[c];++c;e(b);}};
     a.removeHandler = function (b) {this._handlers.remove(b);};
     a.__class__ = easel.util.BasicDispatcher;
-    tetris.Board = function (b, c) {if (b !== $_) {easel.util.BasicDispatcher.apply(this, []);this._width = b;this._height = c;}};
+
+// tetris.Board
+    tetris.Board = function (b, c) {
+		if (b !== $_) {
+			easel.util.BasicDispatcher.apply(this, []);
+			this._width = b;
+			this._height = c;
+		}
+	};
     tetris.Board.__name__ = ["tetris", "Board"];
     tetris.Board.__super__ = easel.util.BasicDispatcher;
     for (k in easel.util.BasicDispatcher.prototype) {
@@ -159,9 +168,63 @@
     a._preview = null;
     a._rowsCleared = null;
     a._width = null;
-    a.clearFilledRows = function () {for (var b = [], c = 0, d = this._piece.coords; c < d.length;) {var e = d[c];++c;var f = this._piece.y + e[1];if (!Lambda.has(b, f)) {var g = true, h = 0;for (e = this._width; h < e;) {var i = h++;if (!this._blocks[f * this._width + i]) {g = false;break;}}g && b.push(f);}}if (b.length > 0) {b.sort($closure(Reflect, "compare"));for (c = 0; c < b.length;) {f = b[c];++c;for (f = f; f > 0;) {e = 0;for (d = this._width; e < d;) {g = e++;this._blocks[f * this._width + g] = this._blocks[(f - 1) * this._width + g];}f -= 1;}}b.reverse();c = b.length;this.score += this.level * [40, 100, 300, 1200][c - 1];this._rowsCleared += c;c = 1 + Math.floor(this._rowsCleared / 18);if (c != this.level) {this.level = c;this.dispatch(tetris.BoardEvent.LevelChanged);}this.dispatch(tetris.BoardEvent.RowsCleared(b));this.dispatch(tetris.BoardEvent.ScoreChanged);}};
-    a.drop = function () {for (; this.isValid(this._piece);) {this._piece.y += 1;}this._piece.y -= 1;this.dispatch(tetris.BoardEvent.PieceDropped(this._piece));this.step();};
-    a.dropPiece = function () {for (; this.isValid(this._piece);) {this._piece.y += 1;}this._piece.y -= 1;this.dispatch(tetris.BoardEvent.PieceDropped(this._piece));};
+    a.clearFilledRows = function () {
+		for (var b = [], c = 0, d = this._piece.coords; c < d.length;) {
+			var e = d[c];++c;
+			var f = this._piece.y + e[1];
+			if (!Lambda.has(b, f)) {
+				var g = true, h = 0;
+				for (e = this._width; h < e;) {
+					var i = h++;
+					if (!this._blocks[f * this._width + i]) {
+						g = false;
+						break;
+					}
+				}
+				g && b.push(f);
+			}
+		}
+		if (b.length > 0) {
+			b.sort($closure(Reflect, "compare"));
+			for (c = 0; c < b.length;) {
+				f = b[c];++c;
+				for (f = f; f > 0;) {
+					e = 0;
+					for (d = this._width; e < d;) {
+						g = e++;
+						this._blocks[f * this._width + g] = this._blocks[(f - 1) * this._width + g];
+					}
+					f -= 1;
+				}
+			}
+			b.reverse();
+			c = b.length;
+			this.score += this.level * [40, 100, 300, 1200][c - 1];
+			this._rowsCleared += c;
+			c = 1 + Math.floor(this._rowsCleared / 18);
+			if (c != this.level) {
+				this.level = c;
+				this.dispatch(tetris.BoardEvent.LevelChanged);
+			}
+			this.dispatch(tetris.BoardEvent.RowsCleared(b));
+			this.dispatch(tetris.BoardEvent.ScoreChanged);
+		}
+	};
+    a.drop = function () {
+		for (; this.isValid(this._piece);) {
+			this._piece.y += 1;
+		}
+		this._piece.y -= 1;
+		this.dispatch(tetris.BoardEvent.PieceDropped(this._piece));
+		this.step();
+	};
+    a.dropPiece = function () {
+		for (; this.isValid(this._piece);) {
+			this._piece.y += 1;
+		}
+		this._piece.y -= 1;
+		this.dispatch(tetris.BoardEvent.PieceDropped(this._piece));
+	};
     a.endGame = function () {this._playing = false;this.dispatch(tetris.BoardEvent.GameOver);};
     a.getHeight = function () {return this._height;};
     a.getPieceX = function () {return this._piece.x;};
@@ -169,7 +232,13 @@
     a.getWidth = function () {return this._width;};
     a.height = null;
     a.isBlocked = function (b, c) {return b < 0 || b >= this._width || c < 0 || c >= this._height || this._blocks[c * this._width + b];};
-    a.isValid = function (b) {for (var c = 0, d = b.coords; c < d.length;) {var e = d[c];++c;if (this.isBlocked(b.x + e[0], b.y + e[1])) {return false;}}return true;};
+    a.isValid = function (b) {
+		for (var c = 0, d = b.coords; c < d.length;) {
+			var e = d[c];++c;
+			if (this.isBlocked(b.x + e[0], b.y + e[1])) {return false;}
+		}
+		return true;
+	};
     a.level = null;
     a.movePiece = function (b, c) {for (var d = this._piece.x + b, e = this._piece.y + c, f = 0, g = this._piece.coords; f < g.length;) {var h = g[f];++f;if (this.isBlocked(d + h[0], e + h[1])) {return false;}}this._piece.x = d;this._piece.y = e;this.dispatch(tetris.BoardEvent.PieceMoved(this._piece, b, c));return true;};
     a.nextPiece = function () {this._piece = this._preview;this._piece.x = Math.floor(this._width / 2);this._piece.y = 2;this._preview = tetris.Piece.createRandom();this.isValid(this._piece) ? this.dispatch(tetris.BoardEvent.NextPiece(this._piece, this._preview)) : this.endGame();};
@@ -178,8 +247,21 @@
     a.placePiece = function () {for (var b = 0, c = this._piece.coords; b < c.length;) {var d = c[b];++b;this._blocks[(this._piece.y + d[1]) * this._width + (this._piece.x + d[0])] = true;}this.dispatch(tetris.BoardEvent.PiecePlaced(this._piece));};
     a.rotate = function () {var b = this._piece.rotate();if (b != null && this.isValid(b)) {this._piece = b;this.dispatch(tetris.BoardEvent.PieceRotated(this._piece));}};
     a.score = null;
-    a.startGame = function () {this._blocks = [];this._playing = true;this._preview = tetris.Piece.createRandom();this.score = this._rowsCleared = 0;this.level = 1;this.dispatch(tetris.BoardEvent.LevelChanged);this.dispatch(tetris.BoardEvent.ScoreChanged);this.nextPiece();};
-    a.step = function () {if (this._playing && !this.movePiece(0, 1)) {this.placePiece();this.clearFilledRows();this.nextPiece();}};
+    a.startGame = function () {
+		this._blocks = [];
+		this._playing = true;
+		this._preview = tetris.Piece.createRandom();
+		this.score = this._rowsCleared = 0;
+		this.level = 1;
+		this.dispatch(tetris.BoardEvent.LevelChanged);
+		this.dispatch(tetris.BoardEvent.ScoreChanged);
+		this.nextPiece();
+	};
+    a.step = function () {
+		if (this._playing && !this.movePiece(0, 1)) {
+			this.placePiece();this.clearFilledRows();this.nextPiece();
+		}
+	};
     a.width = null;
     a.__class__ = tetris.Board;
     easel.display.CircleSprite = function (b) {if (b !== $_) {easel.display.Sprite.apply(this, []);this.boundingBox = [- b, - b, 2 * b, 2 * b];this.radius = b;this._isContentsDirty = true;}};
@@ -345,11 +427,19 @@
     js.Boot.__unhtml = function (b) {return b.split("&").join("&amp;").split("<").join("&lt;").split(">").join("&gt;");};
     js.Boot.__trace = function (b, c) {c = c != null ? c.fileName + ":" + c.lineNumber + ": " : "";c += js.Boot.__unhtml(js.Boot.__string_rec(b, "")) + "<br/>";b = document.getElementById("haxe:trace");if (b == null) {alert("No haxe:trace element defined\n" + c);} else {b.innerHTML += c;}};
     js.Boot.__clear_trace = function () {var b = document.getElementById("haxe:trace");if (b != null) {b.innerHTML = "";}};
-    js.Boot.__closure = function (b, c) {var d = b[c];if (d == null) {return null;}c = function () {return d.apply(b, arguments);};c.scope = b;c.method = d;return c;};
+    js.Boot.__closure = function (b, c) {
+		var d = b[c];
+		if (d == null) {return null;}
+		c = function () {return d.apply(b, arguments);};
+		c.scope = b;
+		c.method = d;
+		return c;
+	};
     js.Boot.__string_rec = function (b, c) {if (b == null) {return "null";}if (c.length >= 5) {return "<...>";}var d = typeof b;if (d == "function" && (b.__name__ != null || b.__ename__ != null)) {d = "object";}switch (d) {case "object":if (b instanceof Array) {if (b.__enum__ != null) {if (b.length == 2) {return b[0];}d = b[0] + "(";c += "\t";for (var e = 2, f = b.length; e < f;) {var g = e++;d += g != 2 ? "," + js.Boot.__string_rec(b[g], c) : js.Boot.__string_rec(b[g], c);}return d + ")";}e = b.length;d = "[";c += "\t";for (f = 0; f < e;) {g = f++;d += (g > 0 ? "," : "") + js.Boot.__string_rec(b[g], c);}d += "]";return d;}try {f = b.toString;} catch (h) {return "???";}if (f != null && f != Object.toString) {d = b.toString();if (d != "[object Object]") {return d;}}f = null;d = "{\n";c += "\t";e = b.hasOwnProperty != null;for (f in b) {if (!(e && !b.hasOwnProperty(f))) {if (!(f == "prototype" || f == "__class__" || f == "__super__" || f == "__interfaces__")) {if (d.length != 2) {d += ", \n";}d += c + f + " : " + js.Boot.__string_rec(b[f], c);}}}c = c.substring(1);d += "\n" + c + "}";return d;case "function":return "<function>";case "string":return b;default:return String(b);}};
     js.Boot.__interfLoop = function (b, c) {if (b == null) {return false;}if (b == c) {return true;}var d = b.__interfaces__;if (d != null) {for (var e = 0, f = d.length; e < f;) {var g = e++;g = d[g];if (g == c || js.Boot.__interfLoop(g, c)) {return true;}}}return js.Boot.__interfLoop(b.__super__, c);};
     js.Boot.__instanceof = function (b, c) {try {if (b instanceof c) {if (c == Array) {return b.__enum__ == null;}return true;}if (js.Boot.__interfLoop(b.__class__, c)) {return true;}} catch (d) {if (c == null) {return false;}}switch (c) {case Int:return Math.ceil(b % 2147483648) === b;case Float:return typeof b == "number";case Bool:return b === true || b === false;case String:return typeof b == "string";case Dynamic:return true;default:if (b == null) {return false;}return b.__enum__ == c || c == Class && b.__name__ != null || c == Enum && b.__ename__ != null;}};
-    js.Boot.__init = function () {js.Lib.isIE = document.all != null && window.opera == null;js.Lib.isOpera = window.opera != null;Array.prototype.copy = Array.prototype.slice;Array.prototype.insert = function (d, e) {this.splice(d, 0, e);};Array.prototype.remove = Array.prototype.indexOf ? function (d) {d = this.indexOf(d);if (d == -1) {return false;}this.splice(d, 1);return true;} : function (d) {for (var e = 0, f = this.length; e < f;) {if (this[e] == d) {this.splice(e, 1);return true;}e++;}return false;};Array.prototype.iterator = function () {return {cur: 0, arr: this, hasNext: function () {return this.cur < this.arr.length;}, next: function () {return this.arr[this.cur++];}};};var b = String.prototype.charCodeAt;String.prototype.cca = b;String.prototype.charCodeAt = function (d) {d = b.call(this, d);if (isNaN(d)) {return null;}return d;};var c = String.prototype.substr;String.prototype.substr = function (d, e) {if (d != null && d != 0 && e != null && e < 0) {return "";}if (e == null) {e = this.length;}if (d < 0) {d = this.length + d;if (d < 0) {d = 0;}} else if (e < 0) {e = this.length + e - d;}return c.apply(this, [d, e]);};$closure = js.Boot.__closure;};
+    js.Boot.__init = function () {js.Lib.isIE = document.all != null && window.opera == null;js.Lib.isOpera = window.opera != null;Array.prototype.copy = Array.prototype.slice;Array.prototype.insert = function (d, e) {this.splice(d, 0, e);};Array.prototype.remove = Array.prototype.indexOf ? function (d) {d = this.indexOf(d);if (d == -1) {return false;}this.splice(d, 1);return true;} : function (d) {for (var e = 0, f = this.length; e < f;) {if (this[e] == d) {this.splice(e, 1);return true;}e++;}return false;};Array.prototype.iterator = function () {return {cur: 0, arr: this, hasNext: function () {return this.cur < this.arr.length;}, next: function () {return this.arr[this.cur++];}};};var b = String.prototype.charCodeAt;String.prototype.cca = b;String.prototype.charCodeAt = function (d) {d = b.call(this, d);if (isNaN(d)) {return null;}return d;};var c = String.prototype.substr;String.prototype.substr = function (d, e) {if (d != null && d != 0 && e != null && e < 0) {return "";}if (e == null) {e = this.length;}if (d < 0) {d = this.length + d;if (d < 0) {d = 0;}} else if (e < 0) {e = this.length + e - d;}return c.apply(this, [d, e]);};
+		$closure = js.Boot.__closure;};
     js.Boot.prototype.__class__ = js.Boot;
     tetris.Main = function () {};
     tetris.Main.__name__ = ["tetris", "Main"];
@@ -397,12 +487,85 @@
     a._preview = null;
     a._score = null;
     a._stepDelay = null;
-    a.handler = function (b) {switch (b[1]) {case 5:easel.media.SoundManager.play("static/clear");break;case 8:easel.media.SoundManager.play("static/gameover");this.stage.setScene(new tetris.GameOverScene);break;case 3:easel.media.SoundManager.play("static/rotate");break;case 2:easel.media.SoundManager.play("static/place");break;case 4:b = b[3];this._preview != null && this.remove(this._preview);this._preview = new tetris.PieceSprite(b);this._preview.setX(275);this._preview.setY(80);this.add(this._preview);b = new easel.display.CircleSprite(1);this._preview.mask = b;var c = this._preview;JSTweener.addTween(b, {radius: 100, time: 0.5, transition: "linear", onComplete: function () {c.mask = null;}});break;case 6:this._score.setText("" + this._board.score);break;case 7:easel.media.SoundManager.play("static/levelup");this._stepDelay = 1000 / this._board.level;var d = this._level;d.setText("L" + this._board.level);d.scaleX = 10;d._isTransformDirty = true;JSTweener.addTween(d, {scaleX: 1, onUpdate: function () {d._isTransformDirty = true;}});break;default:break;}};
-    a.load = function () {js.Lib.document.onkeydown = $closure(this, "onKeyDown");js.Lib.document.getElementById("screen").onclick = $closure(this, "onClick");this.add(new easel.display.ImageSprite(tetris.Main.assets.get("chrome.png")));this._board = new tetris.Board(10, 20);this._boardSprite = new tetris.BoardSprite(this._board);this._boardSprite.setCenterX(-10);this._boardSprite.setCenterY(-10);this._boardSprite.setX(13);this._boardSprite.setY(9);this.add(this._boardSprite);this._score = new easel.display.TextSprite("0");this._score.setFont("bold 32px monospace");this._score.setFillStyle("#00ff00");this._score.setX(220);this._score.setY(186);this._score.setRotation(- Math.PI / 16);this._score.setBaseline("top");this._score.setCacheAsBitmap(true);this.add(this._score);this._level = new easel.display.TextSprite("0");this._level.setFont("bold 48px cursive");this._level.setFillStyle("#00c000");this._level.setStrokeStyle("white");this._level.setBaseline("middle");this._level.setAlign("center");this._level.setX(267);this._level.setY(365);this._level.setRotation(Math.PI / 32);this.add(this._level);this._board.addHandler($closure(this, "handler"));this._board.startGame();};
+    a.handler = function (b) {
+		switch (b[1]) {
+			case 5:easel.media.SoundManager.play("static/clear");break;
+			case 8:easel.media.SoundManager.play("static/gameover");this.stage.setScene(new tetris.GameOverScene);break;
+			case 3:easel.media.SoundManager.play("static/rotate");break;
+			case 2:easel.media.SoundManager.play("static/place");break;
+			case 4:b = b[3];this._preview != null && this.remove(this._preview);this._preview = new tetris.PieceSprite(b);this._preview.setX(275);this._preview.setY(80);this.add(this._preview);b = new easel.display.CircleSprite(1);this._preview.mask = b;var c = this._preview;JSTweener.addTween(b, {radius: 100, time: 0.5, transition: "linear", onComplete: function () {c.mask = null;}});break;
+			case 6:this._score.setText("" + this._board.score);break;
+			case 7:
+				easel.media.SoundManager.play("static/levelup");
+				this._stepDelay = 1000 / this._board.level;
+				var d = this._level;
+				d.setText("L" + this._board.level);
+				d.scaleX = 10;
+				d._isTransformDirty = true;
+				JSTweener.addTween(d, {scaleX: 1, onUpdate: function () {d._isTransformDirty = true;}});
+				break;
+			default:break;
+		}
+	};
+    a.load = function () {
+		js.Lib.document.onkeydown = $closure(this, "onKeyDown");
+		js.Lib.document.getElementById("screen").onclick = $closure(this, "onClick");
+		this.add(new easel.display.ImageSprite(tetris.Main.assets.get("chrome.png")));	
+		this._board = new tetris.Board(10, 20);
+		this._boardSprite = new tetris.BoardSprite(this._board);
+		this._boardSprite.setCenterX(-10);
+		this._boardSprite.setCenterY(-10);
+		this._boardSprite.setX(13);
+		this._boardSprite.setY(9);
+		this.add(this._boardSprite);
+		this._score = new easel.display.TextSprite("0");
+		this._score.setFont("bold 32px monospace");
+		this._score.setFillStyle("#00ff00");
+		this._score.setX(220);
+		this._score.setY(186);
+		this._score.setRotation(- Math.PI / 16);
+		this._score.setBaseline("top");
+		this._score.setCacheAsBitmap(true);
+		this.add(this._score);
+		this._level = new easel.display.TextSprite("0");
+		this._level.setFont("bold 48px cursive");
+		this._level.setFillStyle("#00c000");
+		this._level.setStrokeStyle("white");
+		this._level.setBaseline("middle");
+		this._level.setAlign("center");
+		this._level.setX(267);
+		this._level.setY(365);
+		this._level.setRotation(Math.PI / 32);
+		this.add(this._level);
+		this._board.addHandler($closure(this, "handler"));
+		this._board.startGame();
+	};
     a.onClick = function (b) {var c = (b.clientX - this._boardSprite.x) / 20;b = (b.clientY - this._boardSprite.y) / 20;if (b < this._board._piece.y) {this._board.rotate();} else if (b > this._board._height - 2) {this._board.drop();} else if (c < this._board._piece.x) {this._board.movePiece(-1, 0);} else {c > this._board._piece.x + 1 && this._board.movePiece(1, 0);}};
-    a.onKeyDown = function (b) {switch (b.keyCode) {case 37:this._board.movePiece(-1, 0);break;case 39:this._board.movePiece(1, 0);break;case 38:this._board.rotate();break;case 40:this._board.drop();break;default:return;}b.preventDefault();};
+    a.onKeyDown = function (b) {	
+		switch (b.keyCode) {
+			case 37:	
+				this._board.movePiece(-1, 0);
+				break;
+			case 39:
+				this._board.movePiece(1, 0);
+				break;
+			case 38:
+				this._board.rotate();
+				break;
+			case 40:
+				this._board.drop();
+				break;
+			default:
+				return;
+		}b.preventDefault();
+	};
     a.unload = function () {js.Lib.document.onkeydown = null;js.Lib.document.getElementById("screen").onclick = null;};
-    a.update = function (b) {for (this._lastTick += b; this._lastTick > this._stepDelay;) {this._lastTick -= this._stepDelay;this._board.step();}};
+    a.update = function (b) {
+		for (this._lastTick += b; this._lastTick > this._stepDelay;) {
+			this._lastTick -= this._stepDelay;
+			this._board.step();
+		}
+	};
     a.__class__ = tetris.PlayingScene;
     tetris.GameOverScene = function (b) {b !== $_ && easel.display.Scene.apply(this, []);};
     tetris.GameOverScene.__name__ = ["tetris", "GameOverScene"];
@@ -437,7 +600,18 @@
     a.getHeight = function () {return this.ctx.canvas.height;};
     a.getWidth = function () {return this.ctx.canvas.width;};
     a.height = null;
-    a.init = function (b) {this.setScene(b);var c = 0, d = this, e = function () {var f = (new Date).getTime(), g = d._current;g.update(f - c);g.render(d.ctx);c = f;window.setTimeout(e, 33.333333333333336);};c = Date.now().getTime();e();};
+    a.init = function (b) {
+		this.setScene(b);
+		var c = 0, d = this, e = function () {
+			var f = (new Date).getTime(), g = d._current;
+			g.update(f - c);
+			g.render(d.ctx);
+			c = f;
+			window.setTimeout(e, 33.333333333333336);
+		};
+		c = Date.now().getTime();
+		e();
+	};
     a.setScene = function (b) {if (this._current != null) {this._current.unload();this._current.stage = null;}this._current = b;b.stage = this;b.load();};
     a.width = null;
     a.__class__ = easel.display.Stage;
@@ -480,7 +654,53 @@
     tetris.BoardSprite.BLOCK_SIZE = 20;
     tetris.BoardSprite.ONOMATOPOEIA = ["BAM", "BANG", "BLOOP", "BLURP", "BOFF", "BONK", "CLANK", "CLUNK", "GLURP", "KAPOW", "PAM", "PLOP", "POW", "SPLAT", "THUNK", "WHAP", "WHACK", "WHAM", "ZAM", "ZAP", "ZLONK"];
     $Main.init = tetris.Main.main();
-    var JSTweener = {looping: false, frameRate: 30, objects: [], defaultOptions: {time: 1, transition: "easeoutexpo", delay: 0, onStart: undefined, onStartParams: undefined, onUpdate: undefined, onUpdateParams: undefined, onComplete: undefined, onCompleteParams: undefined}, inited: false, easingFunctionsLowerCase: {}, init: function () {this.inited = true;for (var b in JSTweener.easingFunctions) {this.easingFunctionsLowerCase[b.toLowerCase()] = JSTweener.easingFunctions[b];}}, addTween: function (b, c) {var d = this;this.inited || this.init();var e = {};e.target = b;e.targetPropeties = {};for (var f in this.defaultOptions) {if (typeof c[f] != "undefined") {e[f] = c[f];delete c[f];} else {e[f] = this.defaultOptions[f];}}e.easing = typeof e.transition == "function" ? e.transition : this.easingFunctionsLowerCase[e.transition.toLowerCase()];for (f in c) {var g = b[f];e.targetPropeties[f] = {b: g, c: c[f] - g};}setTimeout(function () {e.startTime = new Date - 0;e.endTime = e.time * 1000 + e.startTime;if (typeof e.onStart == "function") {e.onStartParams ? e.onStart.apply(e, e.onStartParams) : e.onStart();}d.objects.push(e);if (!d.looping) {d.looping = true;d.eventLoop.call(d);}}, e.delay * 1000);}, eventLoop: function () {for (var b = new Date - 0, c = 0; c < this.objects.length; c++) {var d = this.objects[c], e = b - d.startTime, f = d.endTime - d.startTime;if (e >= f) {for (var g in d.targetPropeties) {var h = d.targetPropeties[g];try {d.target[g] = h.b + h.c;} catch (i) {}}this.objects.splice(c, 1);if (typeof d.onUpdate == "function") {d.onUpdateParams ? d.onUpdate.apply(d, d.onUpdateParams) : d.onUpdate();}if (typeof d.onComplete == "function") {d.onCompleteParams ? d.onComplete.apply(d, d.onCompleteParams) : d.onComplete();}} else {for (g in d.targetPropeties) {h = d.targetPropeties[g];h = d.easing(e, h.b, h.c, f);try {d.target[g] = h;} catch (m) {}}if (typeof d.onUpdate == "function") {d.onUpdateParams ? d.onUpdate.apply(d, d.onUpdateParams) : d.onUpdate();}}}if (this.objects.length > 0) {var j = this;setTimeout(function () {j.eventLoop();}, 1000 / j.frameRate);} else {this.looping = false;}}};
+    var JSTweener = {
+		looping: false, frameRate: 30, objects: [], defaultOptions: {time: 1, transition: "easeoutexpo", delay: 0, onStart: undefined, onStartParams: undefined, onUpdate: undefined, onUpdateParams: undefined, onComplete: undefined, onCompleteParams: undefined}, inited: false, easingFunctionsLowerCase: {}, 
+		init: function () {
+			this.inited = true;
+			for (var b in JSTweener.easingFunctions) {
+				this.easingFunctionsLowerCase[b.toLowerCase()] = JSTweener.easingFunctions[b];
+			}
+		}, 
+		addTween: function (b, c) {
+			var d = this;
+			this.inited || this.init();
+			var e = {};
+			e.target = b;
+			e.targetPropeties = {};
+			for (var f in this.defaultOptions) {if (typeof c[f] != "undefined") {e[f] = c[f];
+			delete c[f];
+			} else {e[f] = this.defaultOptions[f];
+			}}e.easing = typeof e.transition == "function" ? e.transition : this.easingFunctionsLowerCase[e.transition.toLowerCase()];
+			for (f in c) {var g = b[f];
+			e.targetPropeties[f] = {b: g, c: c[f] - g};
+			}setTimeout(function () {e.startTime = new Date - 0;
+			e.endTime = e.time * 1000 + e.startTime;
+			if (typeof e.onStart == "function") {e.onStartParams ? e.onStart.apply(e, e.onStartParams) : e.onStart();
+			}d.objects.push(e);
+			if (!d.looping) {d.looping = true;
+			d.eventLoop.call(d);
+			}}, e.delay * 1000);
+		}, 
+		eventLoop: function () {
+			for (var b = new Date - 0, c = 0;
+			 c < this.objects.length;
+			 c++) {var d = this.objects[c], e = b - d.startTime, f = d.endTime - d.startTime;
+			if (e >= f) {for (var g in d.targetPropeties) {var h = d.targetPropeties[g];
+			try {d.target[g] = h.b + h.c;
+			} catch (i) {}}this.objects.splice(c, 1);
+			if (typeof d.onUpdate == "function") {d.onUpdateParams ? d.onUpdate.apply(d, d.onUpdateParams) : d.onUpdate();
+			}if (typeof d.onComplete == "function") {d.onCompleteParams ? d.onComplete.apply(d, d.onCompleteParams) : d.onComplete();
+			}} else {for (g in d.targetPropeties) {h = d.targetPropeties[g];
+			h = d.easing(e, h.b, h.c, f);
+			try {d.target[g] = h;
+			} catch (m) {}}if (typeof d.onUpdate == "function") {d.onUpdateParams ? d.onUpdate.apply(d, d.onUpdateParams) : d.onUpdate();
+			}}}if (this.objects.length > 0) {var j = this;
+			setTimeout(function () {j.eventLoop();
+			}, 1000 / j.frameRate);
+			} else {this.looping = false;
+			}
+		}};
     JSTweener.Utils = {bezier2: function (b, c, d, e) {return (1 - b) * (1 - b) * c + 2 * b * (1 - b) * d + b * b * e;}, bezier3: function (b, c, d, e, f) {return Math.pow(1 - b, 3) * c + 3 * b * Math.pow(1 - b, 2) * d + 3 * b * b * (1 - b) * e + b * b * b * f;}, allSetStyleProperties: function (b) {var c;c = document.defaultView && document.defaultView.getComputedStyle ? document.defaultView.getComputedStyle(b, null) : b.currentStyle;for (var d in c) {if (!d.match(/^\d+$/)) {try {b.style[d] = c[d];} catch (e) {}}}}};
     JSTweener.easingFunctions = {easeNone: function (b, c, d, e) {return d * b / e + c;}, easeInQuad: function (b, c, d, e) {return d * (b /= e) * b + c;}, easeOutQuad: function (b, c, d, e) {return - d * (b /= e) * (b - 2) + c;}, easeInOutQuad: function (b, c, d, e) {if ((b /= e / 2) < 1) {return d / 2 * b * b + c;}return - d / 2 * (--b * (b - 2) - 1) + c;}, easeInCubic: function (b, c, d, e) {return d * (b /= e) * b * b + c;}, easeOutCubic: function (b, c, d, e) {return d * ((b = b / e - 1) * b * b + 1) + c;}, easeInOutCubic: function (b, c, d, e) {if ((b /= e / 2) < 1) {return d / 2 * b * b * b + c;}return d / 2 * ((b -= 2) * b * b + 2) + c;}, easeOutInCubic: function (b, c, d, e) {if (b < e / 2) {return JSTweener.easingFunctions.easeOutCubic(b * 2, c, d / 2, e);}return JSTweener.easingFunctions.easeInCubic(b * 2 - e, c + d / 2, d / 2, e);}, easeInQuart: function (b, c, d, e) {return d * (b /= e) * b * b * b + c;}, easeOutQuart: function (b, c, d, e) {return - d * ((b = b / e - 1) * b * b * b - 1) + c;}, easeInOutQuart: function (b, c, d, e) {if ((b /= e / 2) < 1) {return d / 2 * b * b * b * b + c;}return - d / 2 * ((b -= 2) * b * b * b - 2) + c;}, easeOutInQuart: function (b, c, d, e) {if (b < e / 2) {return JSTweener.easingFunctions.easeOutQuart(b * 2, c, d / 2, e);}return JSTweener.easingFunctions.easeInQuart(b * 2 - e, c + d / 2, d / 2, e);}, easeInQuint: function (b, c, d, e) {return d * (b /= e) * b * b * b * b + c;}, easeOutQuint: function (b, c, d, e) {return d * ((b = b / e - 1) * b * b * b * b + 1) + c;}, easeInOutQuint: function (b, c, d, e) {if ((b /= e / 2) < 1) {return d / 2 * b * b * b * b * b + c;}return d / 2 * ((b -= 2) * b * b * b * b + 2) + c;}, easeOutInQuint: function (b, c, d, e) {if (b < e / 2) {return JSTweener.easingFunctions.easeOutQuint(b * 2, c, d / 2, e);}return JSTweener.easingFunctions.easeInQuint(b * 2 - e, c + d / 2, d / 2, e);}, easeInSine: function (b, c, d, e) {return - d * Math.cos(b / e * (Math.PI / 2)) + d + c;}, easeOutSine: function (b, c, d, e) {return d * Math.sin(b / e * (Math.PI / 2)) + c;}, easeInOutSine: function (b, c, d, e) {return - d / 2 * (Math.cos(Math.PI * b / e) - 1) + c;}, easeOutInSine: function (b, c, d, e) {if (b < e / 2) {return JSTweener.easingFunctions.easeOutSine(b * 2, c, d / 2, e);}return JSTweener.easingFunctions.easeInSine(b * 2 - e, c + d / 2, d / 2, e);}, easeInExpo: function (b, c, d, e) {return b == 0 ? c : d * Math.pow(2, 10 * (b / e - 1)) + c - d * 0.001;}, easeOutExpo: function (b, c, d, e) {return b == e ? c + d : d * 1.001 * (- Math.pow(2, -10 * b / e) + 1) + c;}, easeInOutExpo: function (b, c, d, e) {if (b == 0) {return c;}if (b == e) {return c + d;}if ((b /= e / 2) < 1) {return d / 2 * Math.pow(2, 10 * (b - 1)) + c - d * 0.0005;}return d / 2 * 1.0005 * (- Math.pow(2, -10 * --b) + 2) + c;}, easeOutInExpo: function (b, c, d, e) {if (b < e / 2) {return JSTweener.easingFunctions.easeOutExpo(b * 2, c, d / 2, e);}return JSTweener.easingFunctions.easeInExpo(b * 2 - e, c + d / 2, d / 2, e);}, easeInCirc: function (b, c, d, e) {return - d * (Math.sqrt(1 - (b /= e) * b) - 1) + c;}, easeOutCirc: function (b, c, d, e) {return d * Math.sqrt(1 - (b = b / e - 1) * b) + c;}, easeInOutCirc: function (b, c, d, e) {if ((b /= e / 2) < 1) {return - d / 2 * (Math.sqrt(1 - b * b) - 1) + c;}return d / 2 * (Math.sqrt(1 - (b -= 2) * b) + 1) + c;}, easeOutInCirc: function (b, c, d, e) {if (b < e / 2) {return JSTweener.easingFunctions.easeOutCirc(b * 2, c, d / 2, e);}return JSTweener.easingFunctions.easeInCirc(b * 2 - e, c + d / 2, d / 2, e);}, easeInElastic: function (b, c, d, e, f, g) {if (b == 0) {return c;}if ((b /= e) == 1) {return c + d;}g || (g = e * 0.3);if (!f || f < Math.abs(d)) {f = d;d = g / 4;} else {d = g / (2 * Math.PI) * Math.asin(d / f);}return - (f * Math.pow(2, 10 * (b -= 1)) * Math.sin((b * e - d) * 2 * Math.PI / g)) + c;}, easeOutElastic: function (b, c, d, e, f, g) {var h;if (b == 0) {return c;}if ((b /= e) == 1) {return c + d;}g || (g = e * 0.3);if (!f || f < Math.abs(d)) {f = d;h = g / 4;} else {h = g / (2 * Math.PI) * Math.asin(d / f);}return f * Math.pow(2, -10 * b) * Math.sin((b * e - h) * 2 * Math.PI / g) + d + c;}, easeInOutElastic: function (b, c, d, e, f, g) {var h;if (b == 0) {return c;}if ((b /= e / 2) == 2) {return c + d;}g || (g = e * 0.3 * 1.5);if (!f || f < Math.abs(d)) {f = d;h = g / 4;} else {h = g / (2 * Math.PI) * Math.asin(d / f);}if (b < 1) {return -0.5 * f * Math.pow(2, 10 * (b -= 1)) * Math.sin((b * e - h) * 2 * Math.PI / g) + c;}return f * Math.pow(2, -10 * (b -= 1)) * Math.sin((b * e - h) * 2 * Math.PI / g) * 0.5 + d + c;}, easeOutInElastic: function (b, c, d, e, f, g) {if (b < e / 2) {return JSTweener.easingFunctions.easeOutElastic(b * 2, c, d / 2, e, f, g);}return JSTweener.easingFunctions.easeInElastic(b * 2 - e, c + d / 2, d / 2, e, f, g);}, easeInBack: function (b, c, d, e, f) {if (f == undefined) {f = 1.70158;}return d * (b /= e) * b * ((f + 1) * b - f) + c;}, easeOutBack: function (b, c, d, e, f) {if (f == undefined) {f = 1.70158;}return d * ((b = b / e - 1) * b * ((f + 1) * b + f) + 1) + c;}, easeInOutBack: function (b, c, d, e, f) {if (f == undefined) {f = 1.70158;}if ((b /= e / 2) < 1) {return d / 2 * b * b * (((f *= 1.525) + 1) * b - f) + c;}return d / 2 * ((b -= 2) * b * (((f *= 1.525) + 1) * b + f) + 2) + c;}, easeOutInBack: function (b, c, d, e, f) {if (b < e / 2) {return JSTweener.easingFunctions.easeOutBack(b * 2, c, d / 2, e, f);}return JSTweener.easingFunctions.easeInBack(b * 2 - e, c + d / 2, d / 2, e, f);}, easeInBounce: function (b, c, d, e) {return d - JSTweener.easingFunctions.easeOutBounce(e - b, 0, d, e) + c;}, easeOutBounce: function (b, c, d, e) {return (b /= e) < 0.36363636363636365 ? d * 7.5625 * b * b + c : b < 0.7272727272727273 ? d * (7.5625 * (b -= 0.5454545454545454) * b + 0.75) + c : b < 0.9090909090909091 ? d * (7.5625 * (b -= 0.8181818181818182) * b + 0.9375) + c : d * (7.5625 * (b -= 0.9545454545454546) * b + 0.984375) + c;}, easeInOutBounce: function (b, c, d, e) {return b < e / 2 ? JSTweener.easingFunctions.easeInBounce(b * 2, 0, d, e) * 0.5 + c : JSTweener.easingFunctions.easeOutBounce(b * 2 - e, 0, d, e) * 0.5 + d * 0.5 + c;}, easeOutInBounce: function (b, c, d, e) {if (b < e / 2) {return JSTweener.easingFunctions.easeOutBounce(b * 2, c, d / 2, e);}return JSTweener.easingFunctions.easeInBounce(b * 2 - e, c + d / 2, d / 2, e);}};
     JSTweener.easingFunctions.linear = JSTweener.easingFunctions.easeNone;
