@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script type="text/javascript" src="js/dygraph-combined.js"></script>
+<script type="text/javascript" src="data.js"></script>
+</head>
+<body>
+<div id="graphdiv" style="width:1000px; height:600px;"></div>
+<script type="text/javascript">
+  g = new Dygraph(
+
+    // containing div
+    document.getElementById("graphdiv"),
+	NoisyData, {errorBars:true}
+  );
+</script>
+</body>
+</html>

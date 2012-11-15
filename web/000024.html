@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script type="text/javascript" src="js/dygraph-combined.js"></script>
+<script type="text/javascript" src="stockData.js"></script>
+<title>xxx</title>
+</head>
+<body>
+<div id="graphdiv" style="width:1000px; height:600px;"></div>
+    <p><b>Show Series:</b></p>
+    <p>
+      <input type="checkbox" id="1" checked="true" onClick="change(this)"/>
+      <label for="1"> MA1</label><br/>
+      <input type="checkbox" id="2" checked="true" onClick="change(this)"/>
+      <label for="2"> MA2</label>
+    </p>
+    <p>
+      <input type="button" value="Unzoom" onclick="unzoomGraph()">&nbsp;
+    </p>
+<script type="text/javascript">
+  g = new Dygraph(
+
+    // containing div
+    document.getElementById("graphdiv"),
+		stockData, {
+      errorBars:false,
+      visibility:[true, true, true],
+    }
+  );
+
+  function change(el) {
+    g.setVisibility(parseInt(el.id), el.checked);
+  }
+  function unzoomGraph() {
+    g.updateOptions({
+      dateWindow: null,
+      valueRange: null
+    });
+  }
+</script>
+</body>
+</html>
